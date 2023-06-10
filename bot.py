@@ -2,7 +2,7 @@ import asyncio
 import discord
 import responses
 from discord.ext.commands import Bot
-
+import json
 
 async def send_message(message, user_message, is_private):
     try:
@@ -14,7 +14,11 @@ async def send_message(message, user_message, is_private):
 
 
 def run_discord_bot():
-    TOKEN = 'MTExNzA1MTQ5Mzk4NDUyMjI5MA.GLDkiz.c6aTpFgSqsAnhqdLmRWeJgdREdc_NH7lhOKOok'
+
+    with open('secrets.json', 'r') as f:
+        data = json.load(f)
+        data = dict(data)
+        TOKEN = data["token"]
     intents = discord.Intents.all()
     intents.message_content = True
     client = Bot('!', intents=intents)
