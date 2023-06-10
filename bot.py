@@ -1,5 +1,8 @@
 import asyncio
 import discord
+from discord import app_commands
+import discord.ext
+from discord.ext import commands
 import responses
 from discord.ext.commands import Bot
 import json
@@ -19,14 +22,23 @@ def run_discord_bot():
         data = json.load(f)
         data = dict(data)
         TOKEN = data["token"]
+        SERVER_ID = data["server_id"]
     intents = discord.Intents.all()
     intents.message_content = True
-    client = Bot('!', intents=intents)
-    print("client")
+    client = discord.Client(intents=intents)
+    tree = discord.app_commands.CommandTree(client)
+    
 
+    # sync the slash command to your server
     @client.event
     async def on_ready():
-        print(f'{client.user} is now running!')
+        await tree.sync(guild=discord.Object(id=SERVER_ID))
+        # print "ready" in the console when the bot is ready to work
+        print("Ready")
+
+    @tree.command(name="name", description="description")
+    async def slash_command(interaction: discord.Interaction):    
+        await interaction.response.send_message("command")
 
     @client.event
     async def on_message(message):
