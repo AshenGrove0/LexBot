@@ -1,6 +1,5 @@
 import random as r
 
-
 def get_response(message) -> str:
     processed_message = message.lower()
     if not processed_message.startswith("!"):

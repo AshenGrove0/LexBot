@@ -33,7 +33,7 @@ def run_discord_bot():
     @client.event
     async def on_ready():
         await tree.sync(guild=discord.Object(id=SERVER_ID))
-        # print "ready" in the console when the bot is ready to work
+        # print "Ready" in the console when the bot is ready to work
         print("Ready")
 
     @tree.command(name="name", description="description")
@@ -44,7 +44,6 @@ def run_discord_bot():
     async def on_message(message):
         if message.author == client.user:
             return
-
         username = str(message.author)
         user_message = str(message.content)
         channel = str(message.channel)
