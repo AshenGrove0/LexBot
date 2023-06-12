@@ -1,4 +1,6 @@
-import bot
+import asyncio
+import discord
+from discord import app_commands
+from discord.ext import commands
+import json
 
-if __name__ == '__main__':
-    bot.run_discord_bot()
