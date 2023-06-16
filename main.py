@@ -51,15 +51,18 @@ async def say(interaction: discord.Interaction, translate_arg: str, language: st
         "chinese Traditional": "zh-TW",
         "chinese Simplified": "zh-CN",
     }
-    
+
     try:
         # Converts the language to a usable language code
         if language.lower() in lang_dict:
             language = lang_dict[language.lower()]
         translator = translate.Translator(language)
         translated_word = translator.translate(translate_arg)
+        if "IS AN INVALID TARGET LANGUAGE . EXAMPLE: " in translated_word:
+            throw_exception()
         await interaction.response.send_message(f"{translated_word}", ephemeral=False)
     except Exception as e:
-            await interaction.response.send_message(f"Sorry, I don't know that language", ephemeral=False)
+        print(e)
+        await interaction.response.send_message(f"Sorry, I don't know that language", ephemeral=False)
 
 bot.run(TOKEN)
