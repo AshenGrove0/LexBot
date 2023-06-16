@@ -1,28 +1,38 @@
-import asyncio
+import translate
+import requests
+import wikipedia
+import json
 import discord
 from discord import app_commands
 from discord.ext import commands
-import json
-from config import TOKEN, DICT_API_KEY # Add my api key here
-import translate
-import requests
+from config import TOKEN, DICT_API_KEY 
+
+#name it lex?
+
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
-def get_definition(wprd):
-	base_url = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
-	api_key = "?key=" + DICT_API_KEY
-	
-	if (api == "API-KEY-HERE"):
-        print("You need a new API key")
-		return 2;
-    
-	full_api = base_url + word + api_key
-    response = requests.get(full_api)
-	response = response.json()
 
+def get_definition(word):
+    """Accesses the Marriam webster API to get the definition of a word"""
+    base_url = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
+    api_key = "API-KEY-HERE"
+    api_key = "?key=" + DICT_API_KEY
+	
+    if (api_key == "API-KEY-HERE"):
+        print("You need a new API key")
+        return 2;
+    
+    full_api_url = base_url + word + api_key
+    response = requests.get(full_api_url)
+    data = json.loads(response.content.decode('utf-8'))[0]
+    #Dig through the JSON response to find relevant info
+    definition = data['shortdef'][0]
+    #Remove text modifiers from raw sentence string
+    #print(definition)
 
 @bot.event
 async def on_ready():
+    """Explanations for when the bot is ready"""
     print("Bot is ready")
     try:
         synced = await bot.tree.sync()
@@ -32,22 +42,38 @@ async def on_ready():
     
 @bot.tree.command(name="hello")
 async def hello(interaction: discord.Interaction):
+    """First function created, will be archived"""
     await interaction.response.send_message(f"Hello {interaction.user.mention}", ephemeral=True)
 
 
 @bot.tree.command(name="help")
 async def help(interaction: discord.Interaction):
+    """Provides a list of commands"""
     await interaction.response.send_message(f"```Hello {interaction.user.name}\nThe available commands are:\n/command1: definition\n/command2: definiton```", ephemeral=True)
 
+@bot.tree.command(name="define")
+@app_commands.describe(word="What word do you want to define?")
+async def define(interaction: discord.Interaction, word: str):
+    """Defines a word"""
+    definition = get_definition(word)
+    await interaction.response.send_message(f"The definition of {word} is {definition}", ephemeral=False)
 
-@bot.tree.command(name="say")
-@app_commands.describe(thing_to_say="What should I say?")
-async def say(interaction: discord.Interaction, thing_to_say: str):
-    await interaction.response.send_message(f"{interaction.user.name} said: `{thing_to_say}`", ephemeral=False)
+
+@bot.tree.command(name="info")
+@app_commands.describe(wikipedia_arg="What do you want information on?")
+async def info(interaction: discord.Interaction, wikipedia_arg: str):
+    """Gives information of a word from a wikipedia page"""
+    try:
+        wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=4, auto_suggest=True, redirect=True)
+        await interaction.response.send_message(f"{wikipedia_summary}", ephemeral=False)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(f"{wikipedia_arg} is not available on wikipedia", ephemeral=False)
 
 @bot.tree.command(name="translate")
 @app_commands.describe(translate_arg="What should I translate?", language="What language should I translate to?")
-async def say(interaction: discord.Interaction, translate_arg: str, language: str):
+async def translate(interaction: discord.Interaction, translate_arg: str, language: str):
+    """Translates text into another language"""
     #Creates a dictionary of the most common languages to convert to codes
     lang_dict = {
         "english": "en",
@@ -73,8 +99,6 @@ async def say(interaction: discord.Interaction, translate_arg: str, language: st
             language = lang_dict[language.lower()]
         translator = translate.Translator(language)
         translated_word = translator.translate(translate_arg)
-        if "IS AN INVALID TARGET LANGUAGE . EXAMPLE: " in translated_word:
-            throw_exception()
         await interaction.response.send_message(f"{translated_word}", ephemeral=False)
     except Exception as e:
         print(e)
