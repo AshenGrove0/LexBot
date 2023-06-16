@@ -3,9 +3,24 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import json
-from config import TOKEN
+from config import TOKEN, DICT_API_KEY # Add my api key here
 import translate
+import requests
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+
+def get_definition(wprd):
+	base_url = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
+	api_key = "?key=" + DICT_API_KEY
+	
+	if (api == "API-KEY-HERE"):
+        print("You need a new API key")
+		return 2;
+    
+	full_api = base_url + word + api_key
+    response = requests.get(full_api)
+	response = response.json()
+
+
 @bot.event
 async def on_ready():
     print("Bot is ready")
