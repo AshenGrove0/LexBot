@@ -1,4 +1,4 @@
-import translate
+from translate import Translator
 import requests
 import wikipedia
 import json
@@ -15,20 +15,24 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 def get_definition(word):
     """Accesses the Marriam webster API to get the definition of a word"""
     base_url = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
-    api_key = "API-KEY-HERE"
     api_key = "?key=" + DICT_API_KEY
 	
-    if (api_key == "API-KEY-HERE"):
-        print("You need a new API key")
-        return 2;
+    print(api_key)
     
     full_api_url = base_url + word + api_key
-    response = requests.get(full_api_url)
-    data = json.loads(response.content.decode('utf-8'))[0]
-    #Dig through the JSON response to find relevant info
-    definition = data['shortdef'][0]
-    #Remove text modifiers from raw sentence string
-    #print(definition)
+
+    try:
+        response = requests.get(full_api_url)
+        data = json.loads(response.content.decode('utf-8'))[0]
+        print(data)
+        #Dig through the JSON response to find relevant info
+        definition = data['shortdef'][0]
+        #Remove text modifiers from raw sentence string
+        #print(definition)
+        return definition
+    except Exception as e:
+        print(e)
+        return -1
 
 @bot.event
 async def on_ready():
@@ -56,6 +60,8 @@ async def help(interaction: discord.Interaction):
 async def define(interaction: discord.Interaction, word: str):
     """Defines a word"""
     definition = get_definition(word)
+    if definition == -1:
+            await interaction.response.send_message(f"Could not find definition for {word}", ephemeral=False)
     await interaction.response.send_message(f"The definition of {word} is {definition}", ephemeral=False)
 
 
@@ -92,16 +98,17 @@ async def translate(interaction: discord.Interaction, translate_arg: str, langua
         "chinese Traditional": "zh-TW",
         "chinese Simplified": "zh-CN",
     }
-
-    try:
+    #print(language)
+    #try:
+        #print(language)
         # Converts the language to a usable language code
-        if language.lower() in lang_dict:
-            language = lang_dict[language.lower()]
-        translator = translate.Translator(language)
-        translated_word = translator.translate(translate_arg)
-        await interaction.response.send_message(f"{translated_word}", ephemeral=False)
-    except Exception as e:
-        print(e)
-        await interaction.response.send_message(f"Sorry, I don't know that language", ephemeral=False)
+    if language.lower() in lang_dict:
+        language = lang_dict[language.lower()]
+    translator = Translator(self,language)
+    translated_word = Translator.translate(text=translate_arg)
+    await interaction.response.send_message(f"{translated_word}", ephemeral=False)
+    #except Exception as e:
+    #    print(e)
+    #    await interaction.response.send_message(f"Sorry, I don't know that language", ephemeral=False)
 
 bot.run(TOKEN)
