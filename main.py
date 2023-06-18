@@ -70,19 +70,31 @@ async def define(interaction: discord.Interaction, word: str):
 @app_commands.describe(wikipedia_arg="What do you want information on?")
 async def info(interaction: discord.Interaction, wikipedia_arg: str):
     """Gives information of a word from a wikipedia page"""
-    try:
-        wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=5, auto_suggest=True, redirect=True)
-        await interaction.response.send_message(f"{wikipedia_summary}", ephemeral=False)
-    except Exception as e:
-        print(e)
-        await interaction.response.send_message(f"{wikipedia_arg} is not available on wikipedia", ephemeral=False)
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        try:
+            wikipedia_summary = get_info(wikipedia_arg)
+            cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?,?,?,?);", (f"/info {wikipedia_arg}", f"{wikipedia_summary}", interaction.user.mention, current_time))
+            connection.commit()
+            await interaction.response.send_message(f"{wikipedia_summary}", ephemeral=False)
+        except Exception as e:
+            print(e)
+            cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?,?,?,?);", (f"/info {wikipedia_arg}", f"{wikipedia_arg} is not available on wikipedia", interaction.user.mention, current_time))
+            connection.commit()
+            await interaction.response.send_message(f"{wikipedia_arg} is not available on wikipedia", ephemeral=False)
 
 @bot.tree.command(name="translate")
 @app_commands.describe(translate_arg="What should I translate?", target_lang="What language should I translate to?")
 async def translate(interaction: discord.Interaction, translate_arg: str, target_lang: str):
     """Translates text into another language"""
     #Creates a dictionary of the most common languages to convert to codes
-    translated_text = GoogleTranslator(source='auto', target=target_lang).translate(translate_arg)
-    await interaction.response.send_message(f"{translated_text}", ephemeral=False)
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        translated_text = GoogleTranslator(source='auto', target=target_lang).translate(translate_arg)
+        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/translate {translate_arg} {target_lang}", f"{translated_text}", interaction.user.mention, current_time))
+        connection.commit()
+        await interaction.response.send_message(f"{translated_text}", ephemeral=False)
 
 bot.run(TOKEN)

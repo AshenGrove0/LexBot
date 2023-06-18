@@ -2,7 +2,7 @@ import requests
 from config import DICT_API_KEY 
 import datetime
 import json
-
+import wikipedia
 def get_current_time():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -28,6 +28,10 @@ def get_definition(word):
     except Exception as e:
         print(e)
         return -1
+
+def get_info(wikipedia_arg):
+    wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=5, auto_suggest=True, redirect=True)
+    return wikipedia_summary
 
 
 LANGUAGE_CODES = {
