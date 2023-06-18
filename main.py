@@ -7,33 +7,12 @@ from discord import app_commands
 from discord.ext import commands
 from config import TOKEN, DICT_API_KEY 
 from language_codes import LANGUAGE_CODES
-
-#name it lex?
+from helpers import *
+import datetime
+import sqlite3
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
-
-def get_definition(word):
-    """Accesses the Marriam webster API to get the definition of a word"""
-    base_url = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
-    api_key = "?key=" + DICT_API_KEY
-	
-    print(api_key)
-    
-    full_api_url = base_url + word + api_key
-
-    try:
-        response = requests.get(full_api_url)
-        data = json.loads(response.content.decode('utf-8'))[0]
-        print(data)
-        #Dig through the JSON response to find relevant info
-        definition = data['shortdef'][0]
-        #Remove text modifiers from raw sentence string
-        #print(definition)
-        return definition
-    except Exception as e:
-        print(e)
-        return -1
 
 @bot.event
 async def on_ready():
@@ -48,13 +27,23 @@ async def on_ready():
 @bot.tree.command(name="hello")
 async def hello(interaction: discord.Interaction):
     """First function created, will be archived"""
-    await interaction.response.send_message(f"Hello {interaction.user.mention}", ephemeral=True)
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", ("/hello",f"Hello {interaction.user.name}", interaction.user.mention, current_time))
+        connection.commit()
+        await interaction.response.send_message(f"Hello {interaction.user.mention}", ephemeral=True)
 
 
 @bot.tree.command(name="help")
 async def help(interaction: discord.Interaction):
     """Provides a list of commands"""
-    await interaction.response.send_message(f"```Hello {interaction.user.name}\nThe available commands are:\n/command1: definition\n/command2: definiton```", ephemeral=True)
+    await interaction.response.send_message(
+        f"""```Hello {interaction.user.name}\n
+        The available commands are:\n
+        /command1: definition\n
+        /command2: definiton```""", 
+        ephemeral=True)
 
 @bot.tree.command(name="define")
 @app_commands.describe(word="What word do you want to define?")
