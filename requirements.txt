@@ -1,4 +1,4 @@
 discord
-translate
+deep_translator
 requests
 wikipedia

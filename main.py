@@ -1,4 +1,4 @@
-from translate import Translator
+from deep_translator import GoogleTranslator
 import requests
 import wikipedia
 import json
@@ -70,15 +70,15 @@ async def define(interaction: discord.Interaction, word: str):
 async def info(interaction: discord.Interaction, wikipedia_arg: str):
     """Gives information of a word from a wikipedia page"""
     try:
-        wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=4, auto_suggest=True, redirect=True)
+        wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=5, auto_suggest=True, redirect=True)
         await interaction.response.send_message(f"{wikipedia_summary}", ephemeral=False)
     except Exception as e:
         print(e)
         await interaction.response.send_message(f"{wikipedia_arg} is not available on wikipedia", ephemeral=False)
 
 @bot.tree.command(name="translate")
-@app_commands.describe(translate_arg="What should I translate?", language="What language should I translate to?")
-async def translate(interaction: discord.Interaction, translate_arg: str, language: str):
+@app_commands.describe(translate_arg="What should I translate?", target_lang="What language should I translate to?")
+async def translate(interaction: discord.Interaction, translate_arg: str, target_lang: str):
     """Translates text into another language"""
     #Creates a dictionary of the most common languages to convert to codes
     lang_dict = {
@@ -98,17 +98,7 @@ async def translate(interaction: discord.Interaction, translate_arg: str, langua
         "chinese Traditional": "zh-TW",
         "chinese Simplified": "zh-CN",
     }
-    #print(language)
-    #try:
-        #print(language)
-        # Converts the language to a usable language code
-    if language.lower() in lang_dict:
-        language = lang_dict[language.lower()]
-    translator = Translator(self,language)
-    translated_word = Translator.translate(text=translate_arg)
-    await interaction.response.send_message(f"{translated_word}", ephemeral=False)
-    #except Exception as e:
-    #    print(e)
-    #    await interaction.response.send_message(f"Sorry, I don't know that language", ephemeral=False)
+    translated_text = GoogleTranslator(source='auto', target=target_lang).translate(translate_arg)
+    await interaction.response.send_message(f"{translated_text}", ephemeral=False)
 
 bot.run(TOKEN)
