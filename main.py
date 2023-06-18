@@ -29,7 +29,7 @@ async def hello(interaction: discord.Interaction):
     with sqlite3.connect("history.db") as connection:
         cursor = connection.cursor()
         current_time = get_current_time()
-        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", ("/hello",f"Hello {interaction.user.name}", interaction.user.mention, current_time))
+        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", ("/hello",f"Hello {interaction.user.mention}", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"Hello {interaction.user.mention}", ephemeral=True)
 
@@ -37,21 +37,33 @@ async def hello(interaction: discord.Interaction):
 @bot.tree.command(name="help")
 async def help(interaction: discord.Interaction):
     """Provides a list of commands"""
-    await interaction.response.send_message(
-        f"""```Hello {interaction.user.name}\n
-        The available commands are:\n
-        /command1: definition\n
-        /command2: definiton```""", 
-        ephemeral=True)
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", ("/help",f"[HELP COMMAND LIST]", interaction.user.mention, current_time))
+        connection.commit()
+        await interaction.response.send_message(
+            f"""```Hello {interaction.user.name}\n
+            The available commands are:\n
+            /command1: definition\n
+            /command2: definiton```""", 
+            ephemeral=True)
 
 @bot.tree.command(name="define")
 @app_commands.describe(word="What word do you want to define?")
 async def define(interaction: discord.Interaction, word: str):
     """Defines a word"""
-    definition = get_definition(word)
-    if definition == -1:
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        definition = get_definition(word)
+        if definition == -1:
+            cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/define {word}", f"Could not find definition for {word}", interaction.user.mention, current_time))
+            connection.commit()
             await interaction.response.send_message(f"Could not find definition for {word}", ephemeral=False)
-    await interaction.response.send_message(f"The definition of {word} is {definition}", ephemeral=False)
+        else:
+            cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/define {word}", f"The definition of {word} is {definition}", interaction.user.mention, current_time))
+            await interaction.response.send_message(f"The definition of {word} is {definition}", ephemeral=False)
 
 
 @bot.tree.command(name="info")
