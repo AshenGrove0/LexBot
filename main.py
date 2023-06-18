@@ -6,6 +6,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from config import TOKEN, DICT_API_KEY 
+from language_codes import LANGUAGE_CODES
 
 #name it lex?
 
@@ -81,23 +82,6 @@ async def info(interaction: discord.Interaction, wikipedia_arg: str):
 async def translate(interaction: discord.Interaction, translate_arg: str, target_lang: str):
     """Translates text into another language"""
     #Creates a dictionary of the most common languages to convert to codes
-    lang_dict = {
-        "english": "en",
-        "french": "fr",
-        "german": "de",
-        "spanish": "es",
-        "italian": "it",
-        "japanese": "ja",
-        "korean": "ko",
-        "dutch": "nl",
-        "polish": "pl",
-        "portuguese": "pt",
-        "russian": "ru",
-        "turkish": "tr",
-        "chinese": "zh-CN",
-        "chinese Traditional": "zh-TW",
-        "chinese Simplified": "zh-CN",
-    }
     translated_text = GoogleTranslator(source='auto', target=target_lang).translate(translate_arg)
     await interaction.response.send_message(f"{translated_text}", ephemeral=False)
 
