@@ -6,7 +6,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from config import TOKEN, DICT_API_KEY 
-from language_codes import LANGUAGE_CODES
 from helpers import *
 import datetime
 import sqlite3
