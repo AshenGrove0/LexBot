@@ -49,6 +49,18 @@ async def help(interaction: discord.Interaction):
             /command2: definiton```""", 
             ephemeral=True)
 
+@bot.tree.command(name="history")
+@app_commands.describe(amount="How many commands do you want to display?")
+async def history(interaction: discord.Interaction, amount: int):
+    """Displays the history of commands"""
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        history = get_history(amount)
+        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/history {amount}", f"{history}", interaction.user.mention, current_time))
+        connection.commit()
+        await interaction.response.send_message(f"{history}", ephemeral=False)
+
 @bot.tree.command(name="define")
 @app_commands.describe(word="What word do you want to define?")
 async def define(interaction: discord.Interaction, word: str):
@@ -82,7 +94,7 @@ async def info(interaction: discord.Interaction, wikipedia_arg: str):
             print(e)
             cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?,?,?,?);", (f"/info {wikipedia_arg}", f"{wikipedia_arg} is not available on wikipedia", interaction.user.mention, current_time))
             connection.commit()
-            await interaction.response.send_message(f"{wikipedia_arg} is not available on wikipedia", ephemeral=False)
+            await interaction.response.send_message(f"{wikipedia_arg} is not available on wikipedia, try being more specific", ephemeral=False)
 
 @bot.tree.command(name="translate")
 @app_commands.describe(translate_arg="What should I translate?", target_lang="What language should I translate to?")
@@ -96,5 +108,7 @@ async def translate(interaction: discord.Interaction, translate_arg: str, target
         cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/translate {translate_arg} {target_lang}", f"{translated_text}", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"{translated_text}", ephemeral=False)
+
+
 
 bot.run(TOKEN)
