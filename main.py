@@ -29,7 +29,7 @@ async def hello(interaction: discord.Interaction):
     with sqlite3.connect("history.db") as connection:
         cursor = connection.cursor()
         current_time = get_current_time()
-        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", ("/hello",f"Hello {interaction.user.mention}", interaction.user.mention, current_time))
+        cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", ("/hello", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"Hello {interaction.user.mention}", ephemeral=True)
 
@@ -40,7 +40,7 @@ async def help(interaction: discord.Interaction):
     with sqlite3.connect("history.db") as connection:
         cursor = connection.cursor()
         current_time = get_current_time()
-        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", ("/help",f"[HELP COMMAND LIST]", interaction.user.mention, current_time))
+        cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", ("/help", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(
             f"""```Hello {interaction.user.name}\n
@@ -49,15 +49,20 @@ async def help(interaction: discord.Interaction):
             /command2: definiton```""", 
             ephemeral=True)
 
-@bot.tree.command(name="history")
+@bot.tree.command(name="history") #make this actually show up...
 @app_commands.describe(amount="How many commands do you want to display?")
 async def history(interaction: discord.Interaction, amount: int):
     """Displays the history of commands"""
     with sqlite3.connect("history.db") as connection:
         cursor = connection.cursor()
         current_time = get_current_time()
-        history = get_history(amount)
-        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/history {amount}", f"{history}", interaction.user.mention, current_time))
+        try:
+            history = cursor.execute("SELECT * FROM history ORDER BY datetime DESC LIMIT ?;", (amount,))
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(f"Could not retrieve history. Decrease the limit.", ephemeral=False)
+        history = history.fetchall()
+        cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/history {amount}", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"{history}", ephemeral=False)
 
@@ -70,11 +75,11 @@ async def define(interaction: discord.Interaction, word: str):
         current_time = get_current_time()
         definition = get_definition(word)
         if definition == -1:
-            cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/define {word}", f"Could not find definition for {word}", interaction.user.mention, current_time))
+            cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/define {word}", interaction.user.mention, current_time))
             connection.commit()
             await interaction.response.send_message(f"Could not find definition for {word}", ephemeral=False)
         else:
-            cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/define {word}", f"The definition of {word} is {definition}", interaction.user.mention, current_time))
+            cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/define {word}", interaction.user.mention, current_time))
             await interaction.response.send_message(f"The definition of {word} is {definition}", ephemeral=False)
 
 
@@ -87,12 +92,12 @@ async def info(interaction: discord.Interaction, wikipedia_arg: str):
         current_time = get_current_time()
         try:
             wikipedia_summary = get_info(wikipedia_arg)
-            cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?,?,?,?);", (f"/info {wikipedia_arg}", f"{wikipedia_summary}", interaction.user.mention, current_time))
+            cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?,?,?);", (f"/info {wikipedia_arg}", interaction.user.mention, current_time))
             connection.commit()
             await interaction.response.send_message(f"{wikipedia_summary}", ephemeral=False)
         except Exception as e:
             print(e)
-            cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?,?,?,?);", (f"/info {wikipedia_arg}", f"{wikipedia_arg} is not available on wikipedia", interaction.user.mention, current_time))
+            cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?,?,?);", (f"/info {wikipedia_arg}", interaction.user.mention, current_time))
             connection.commit()
             await interaction.response.send_message(f"{wikipedia_arg} is not available on wikipedia, try being more specific", ephemeral=False)
 
@@ -105,7 +110,7 @@ async def translate(interaction: discord.Interaction, translate_arg: str, target
         cursor = connection.cursor()
         current_time = get_current_time()
         translated_text = GoogleTranslator(source='auto', target=target_lang).translate(translate_arg)
-        cursor.execute("INSERT INTO history (command, result, user, datetime) VALUES(?, ?, ?, ?);", (f"/translate {translate_arg} {target_lang}", f"{translated_text}", interaction.user.mention, current_time))
+        cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/translate {translate_arg} {target_lang}", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"{translated_text}", ephemeral=False)
 

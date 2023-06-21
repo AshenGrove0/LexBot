@@ -33,13 +33,7 @@ def get_definition(word):
 def get_info(wikipedia_arg):
     wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=5, auto_suggest=True, redirect=True)
     return wikipedia_summary
-
-
-def get_history(amount):
-    with sqlite3.connect("history.db") as connection:
-        cursor = connection.cursor()
-        history = cursor.execute("SELECT * FROM history ORDER BY datetime DESC LIMIT ?;", (amount,))
-        return history
+    
 
 LANGUAGE_CODES = {
     "afar": "aa",
