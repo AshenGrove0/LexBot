@@ -64,7 +64,7 @@ async def history(interaction: discord.Interaction, amount: int):
             history = tabulate.tabulate(history, headers=["Index", "Command", "User", "Timestamp"])
         except Exception as e:
             print(e)
-            await interaction.response.send_message(f"Could not retrieve history. Decrease the limit.", ephemeral=False)
+            await interaction.response.send_message(f"The quantity provided was too large.", ephemeral=False)
         cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/history {amount}", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"{history}", ephemeral=False)
