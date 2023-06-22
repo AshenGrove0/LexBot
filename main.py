@@ -9,7 +9,8 @@ from config import TOKEN, DICT_API_KEY
 from helpers import *
 import datetime
 import sqlite3
-
+import pprint
+import tabulate
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 
@@ -58,10 +59,12 @@ async def history(interaction: discord.Interaction, amount: int):
         current_time = get_current_time()
         try:
             history = cursor.execute("SELECT * FROM history ORDER BY datetime DESC LIMIT ?;", (amount,))
+            history = history.fetchall()
+            #history = pprint.pformat(history)
+            history = tabulate.tabulate(history, headers=["Index", "Command", "User", "Timestamp"])
         except Exception as e:
             print(e)
             await interaction.response.send_message(f"Could not retrieve history. Decrease the limit.", ephemeral=False)
-        history = history.fetchall()
         cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/history {amount}", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"{history}", ephemeral=False)

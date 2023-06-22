@@ -3,3 +3,4 @@ deep_translator
 requests
 wikipedia
 sqlite3
+tabulate
