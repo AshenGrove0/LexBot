@@ -9,8 +9,9 @@ from config import TOKEN, DICT_API_KEY
 from helpers import *
 import datetime
 import sqlite3
-import pprint
 import tabulate
+
+
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 
@@ -60,7 +61,6 @@ async def history(interaction: discord.Interaction, amount: int):
         try:
             history = cursor.execute("SELECT * FROM history ORDER BY datetime DESC LIMIT ?;", (amount,))
             history = history.fetchall()
-            #history = pprint.pformat(history)
             history = tabulate.tabulate(history, headers=["Index", "Command", "User", "Timestamp"])
         except Exception as e:
             print(e)
@@ -116,7 +116,6 @@ async def translate(interaction: discord.Interaction, translate_arg: str, target
         cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/translate {translate_arg} {target_lang}", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"{translated_text}", ephemeral=False)
-
 
 
 bot.run(TOKEN)
