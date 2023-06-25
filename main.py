@@ -3,6 +3,10 @@ import requests
 import wikipedia
 import json
 import discord
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.stem import PorterStemmer
 from discord import app_commands
 from discord.ext import commands
 from config import TOKEN, DICT_API_KEY 
@@ -116,6 +120,42 @@ async def translate(interaction: discord.Interaction, translate_arg: str, target
         cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/translate {translate_arg} {target_lang}", interaction.user.mention, current_time))
         connection.commit()
         await interaction.response.send_message(f"{translated_text}", ephemeral=False)
+
+
+@bot.tree.command(name="classify")
+@app_commands.describe(word="What is the word you want to classify?", sentence = "Give an exaple of a usage of that word")
+async def classify(interaction: discord.Interaction, word: str, sentence: str):
+    word = word.lower()
+    sentence = sentence.lower()
+    stop_words = set(stopwords.words('english'))
+    tokenized = sent_tokenize(sentence)
+    for token in tokenized:
+        wordsList = nltk.word_tokenize(token)
+        wordsList = [w for w in wordsList if w not in stop_words]
+        tagged = nltk.pos_tag(wordsList)
+    
+        print(tagged)
+    for w in range(len(tagged)):
+        if tagged[w][0] == word:
+            pos_acronym = tagged[w][1]
+            pos_word = get_pos_word(pos_acronym)
+            await interaction.response.send_message(f"{word.capitalize()} is a {pos_word.lower()}")
+            return
+    await interaction.response.send_message("Sorry, I can't classify that word.")
+
+
+
+@bot.tree.command(name="stem")
+@app_commands.describe(word="What is the word you want to find the stem of?")
+async def stem(interaction: discord.Interaction, word: str):
+    word = word.lower()
+    stemmer = PorterStemmer()
+    try:
+        stem = stemmer.stem(word)
+        await interaction.response.send_message(f"The stem of {word.capitalize()} is {stem.capitalize()}")
+    except Exception as e:
+        await interaction.response.send_message(f"Sorry, I can't find the stem of {word.capitalize()}.")
+
 
 
 bot.run(TOKEN)

@@ -4,3 +4,4 @@ requests
 wikipedia
 sqlite3
 tabulate
+nltk
