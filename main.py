@@ -7,6 +7,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import PorterStemmer
+from nltk.sentiment import SentimentIntensityAnalyzer
 from discord import app_commands
 from discord.ext import commands
 from config import TOKEN, DICT_API_KEY 
@@ -156,6 +157,26 @@ async def stem(interaction: discord.Interaction, word: str):
     except Exception as e:
         await interaction.response.send_message(f"Sorry, I can't find the stem of {word.capitalize()}.")
 
-
+@bot.tree.command(name="analyze")
+@app_commands.describe(sentence="What is the sentence you want to analyze?")
+async def analyze(interaction: discord.Interaction, sentence: str):
+    sia = SentimentIntensityAnalyzer()
+    score = sia.polarity_scores(sentence)
+    score = score['compound']
+    result = ""
+    if score < 0:
+        if score < -0.5:
+            result = "negative"
+        else:
+            result = "negative-leaning"
+    elif score >= 0:
+        if score > 0.5:
+            result = "positive"
+        else:
+            result = "positive-leaning"
+    if result != "":
+        await interaction.response.send_message(f"The sentiment of that sentence is {result}")
+    else:
+        await interaction.response.send_message(f"The sentiment of that sentence is unknown.")
 
 bot.run(TOKEN)
