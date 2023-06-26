@@ -30,6 +30,28 @@ def get_definition(word):
         print(e)
         return -1
 
+def get_synonyms(word):
+    """Accesses the Marriam webster API to get the synonyms of a word"""
+    base_url = "https://dictionaryapi.com/api/v3/references/thesaurus/json/"
+    api_key = "?key=" + THES_API_KEY
+	
+    print(api_key)
+    
+    full_api_url = base_url + word + api_key
+
+    try:
+        response = requests.get(full_api_url)
+        data = json.loads(response.content.decode('utf-8'))[0]
+        print(data)
+        #Dig through the JSON response to find relevant info
+        #definition = data['shortdef'][0]
+        #Remove text modifiers from raw sentence string
+        #print(definition)
+        #return synonyms
+    except Exception as e:
+        print(e)
+        return -1
+
 def get_info(wikipedia_arg):
     wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=5, auto_suggest=True, redirect=True)
     return wikipedia_summary

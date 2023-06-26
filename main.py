@@ -91,6 +91,23 @@ async def define(interaction: discord.Interaction, word: str):
             await interaction.response.send_message(f"The definition of {word} is {definition}", ephemeral=False)
 
 
+@bot.tree.command(name="synonym")
+@app_commands.describe(word="What word do you want to find synonyms of?")
+async def synonym(interaction: discord.Interaction, word: str):
+    """Defines a word"""
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        synonyms = get_synonyms(word)
+        if synonyms == -1:
+            cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/synonym {word}", interaction.user.mention, current_time))
+            connection.commit()
+            await interaction.response.send_message(f"Could not find synonym(s) for {word}", ephemeral=False)
+        else:
+            cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/synonym {word}", interaction.user.mention, current_time))
+            await interaction.response.send_message(f"Some synonyms of {word} are {synonyms}", ephemeral=False)
+
+
 @bot.tree.command(name="info")
 @app_commands.describe(wikipedia_arg="What do you want information on?")
 async def info(interaction: discord.Interaction, wikipedia_arg: str):
@@ -123,60 +140,78 @@ async def translate(interaction: discord.Interaction, translate_arg: str, target
         await interaction.response.send_message(f"{translated_text}", ephemeral=False)
 
 
+
 @bot.tree.command(name="classify")
 @app_commands.describe(word="What is the word you want to classify?", sentence = "Give an exaple of a usage of that word")
 async def classify(interaction: discord.Interaction, word: str, sentence: str):
-    word = word.lower()
-    sentence = sentence.lower()
-    stop_words = set(stopwords.words('english'))
-    tokenized = sent_tokenize(sentence)
-    for token in tokenized:
-        wordsList = nltk.word_tokenize(token)
-        wordsList = [w for w in wordsList if w not in stop_words]
-        tagged = nltk.pos_tag(wordsList)
-    
-        print(tagged)
-    for w in range(len(tagged)):
-        if tagged[w][0] == word:
-            pos_acronym = tagged[w][1]
-            pos_word = get_pos_word(pos_acronym)
-            await interaction.response.send_message(f"{word.capitalize()} is a {pos_word.lower()}")
-            return
-    await interaction.response.send_message("Sorry, I can't classify that word.")
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        word = word.lower()
+        sentence = sentence.lower()
+        stop_words = set(stopwords.words('english'))
+        tokenized = sent_tokenize(sentence)
+        for token in tokenized:
+            wordsList = nltk.word_tokenize(token)
+            wordsList = [w for w in wordsList if w not in stop_words]
+            tagged = nltk.pos_tag(wordsList)
+        
+            print(tagged)
+        for w in range(len(tagged)):
+            if tagged[w][0] == word:
+                pos_acronym = tagged[w][1]
+                pos_word = get_pos_word(pos_acronym)
+                cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/classify {word} {sentence}", interaction.user.mention, current_time))
+                connection.commit()
+                await interaction.response.send_message(f"{word.capitalize()} is a {pos_word.lower()}")
+                return
+        await interaction.response.send_message("Sorry, I can't classify that word.")
 
 
 
 @bot.tree.command(name="stem")
 @app_commands.describe(word="What is the word you want to find the stem of?")
 async def stem(interaction: discord.Interaction, word: str):
-    word = word.lower()
-    stemmer = PorterStemmer()
-    try:
-        stem = stemmer.stem(word)
-        await interaction.response.send_message(f"The stem of {word.capitalize()} is {stem.capitalize()}")
-    except Exception as e:
-        await interaction.response.send_message(f"Sorry, I can't find the stem of {word.capitalize()}.")
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        word = word.lower()
+        stemmer = PorterStemmer()
+        try:
+            stem = stemmer.stem(word)
+            cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/stem {word}", interaction.user.mention, current_time))
+            connection.commit()
+            await interaction.response.send_message(f"The stem of {word.capitalize()} is {stem.capitalize()}")
+        except Exception as e:
+            cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/stem {word}", interaction.user.mention, current_time))
+            connection.commit()
+            await interaction.response.send_message(f"Sorry, I can't find the stem of {word.capitalize()}.")
 
 @bot.tree.command(name="analyze")
 @app_commands.describe(sentence="What is the sentence you want to analyze?")
 async def analyze(interaction: discord.Interaction, sentence: str):
-    sia = SentimentIntensityAnalyzer()
-    score = sia.polarity_scores(sentence)
-    score = score['compound']
-    result = ""
-    if score < 0:
-        if score < -0.5:
-            result = "negative"
+    with sqlite3.connect("history.db") as connection:
+        cursor = connection.cursor()
+        current_time = get_current_time()
+        sia = SentimentIntensityAnalyzer()
+        score = sia.polarity_scores(sentence)
+        score = score['compound']
+        result = ""
+        if score < 0:
+            if score < -0.5:
+                result = "negative"
+            else:
+                result = "negative-leaning"
+        elif score >= 0:
+            if score > 0.5:
+                result = "positive"
+            else:
+                result = "positive-leaning"
+        cursor.execute("INSERT INTO history (command, user, datetime) VALUES(?, ?, ?);", (f"/analyze {sentence}", interaction.user.mention, current_time))
+        connection.commit()
+        if result != "":
+            await interaction.response.send_message(f"The sentiment of that sentence is {result}")
         else:
-            result = "negative-leaning"
-    elif score >= 0:
-        if score > 0.5:
-            result = "positive"
-        else:
-            result = "positive-leaning"
-    if result != "":
-        await interaction.response.send_message(f"The sentiment of that sentence is {result}")
-    else:
-        await interaction.response.send_message(f"The sentiment of that sentence is unknown.")
+            await interaction.response.send_message(f"The sentiment of that sentence is unknown.")
 
 bot.run(TOKEN)
