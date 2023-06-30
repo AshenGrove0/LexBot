@@ -1,5 +1,5 @@
 import requests
-from config import DICT_API_KEY 
+from config import DICT_API_KEY, THES_API_KEY
 import datetime
 import json
 import wikipedia
@@ -42,12 +42,12 @@ def get_synonyms(word):
     try:
         response = requests.get(full_api_url)
         data = json.loads(response.content.decode('utf-8'))[0]
-        print(data)
+        #print(data)
         #Dig through the JSON response to find relevant info
-        #definition = data['shortdef'][0]
+        synonyms = data["meta"]["syns"][0] # fix this
         #Remove text modifiers from raw sentence string
-        #print(definition)
-        #return synonyms
+        print(synonyms)
+        return synonyms
     except Exception as e:
         print(e)
         return -1
