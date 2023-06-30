@@ -53,10 +53,12 @@ def get_synonyms(word):
         return -1
 
 def get_info(wikipedia_arg):
+    """Uses the wikipedia module to return a summary of the topic"""
     wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=5, auto_suggest=True, redirect=True)
     return wikipedia_summary
 
 def get_pos_word(pos_acronym):
+    """Gets the Part of Speech of a word"""
     return POS_DICTIONARY[pos_acronym]
 
 LANGUAGE_CODES = {

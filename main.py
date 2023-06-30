@@ -144,6 +144,7 @@ async def translate(interaction: discord.Interaction, translate_arg: str, target
 @bot.tree.command(name="classify")
 @app_commands.describe(word="What is the word you want to classify?", sentence = "Give an exaple of a usage of that word")
 async def classify(interaction: discord.Interaction, word: str, sentence: str):
+    """Returns the Part of Speech of a word (eg. noun, posessive pronoun)"""
     with sqlite3.connect("history.db") as connection:
         cursor = connection.cursor()
         current_time = get_current_time()
@@ -172,6 +173,7 @@ async def classify(interaction: discord.Interaction, word: str, sentence: str):
 @bot.tree.command(name="stem")
 @app_commands.describe(word="What is the word you want to find the stem of?")
 async def stem(interaction: discord.Interaction, word: str):
+    """Returns the stem of a word (eg. Eating -> Eat)"""
     with sqlite3.connect("history.db") as connection:
         cursor = connection.cursor()
         current_time = get_current_time()
@@ -190,6 +192,7 @@ async def stem(interaction: discord.Interaction, word: str):
 @bot.tree.command(name="analyze")
 @app_commands.describe(sentence="What is the sentence you want to analyze?")
 async def analyze(interaction: discord.Interaction, sentence: str):
+    """Performs sentiment analysis on a piece of text"""
     with sqlite3.connect("history.db") as connection:
         cursor = connection.cursor()
         current_time = get_current_time()
