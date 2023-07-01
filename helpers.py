@@ -44,7 +44,12 @@ def get_synonyms(word):
         data = json.loads(response.content.decode('utf-8'))[0]
         #print(data)
         #Dig through the JSON response to find relevant info
-        synonyms = data["meta"]["syns"][0] # fix this
+        synonyms = data["meta"]["syns"][0] 
+        synonyms_string = ""
+        for synonym in synonyms:
+            synonyms_string += synonym
+            synonyms_string += ","
+        synonyms.strip("")
         #Remove text modifiers from raw sentence string
         print(synonyms)
         return synonyms
