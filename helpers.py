@@ -4,6 +4,8 @@ import datetime
 import json
 import wikipedia
 import sqlite3
+
+
 def get_current_time():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -21,10 +23,9 @@ def get_definition(word):
         response = requests.get(full_api_url)
         data = json.loads(response.content.decode('utf-8'))[0]
         print(data)
-        #Dig through the JSON response to find relevant info
+        #Digs through the JSON response to find relevant info
         definition = data['shortdef'][0]
-        #Remove text modifiers from raw sentence string
-        #print(definition)
+        #Removes text modifiers from raw sentence string
         return definition
     except Exception as e:
         print(e)
@@ -42,7 +43,6 @@ def get_synonyms(word):
     try:
         response = requests.get(full_api_url)
         data = json.loads(response.content.decode('utf-8'))[0]
-        #print(data)
         #Dig through the JSON response to find relevant info
         synonyms = data["meta"]["syns"][0] 
         synonyms_string = ""
