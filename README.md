@@ -1,2 +1,3 @@
-# ScaleneBot
-MEntion requiring to download the corpora
+# Lexbot
+## A Discord bot for all your word-based needs
+
