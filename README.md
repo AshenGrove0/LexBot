@@ -7,16 +7,17 @@
 ## Features:
 
 - Start by copying from help command but remeber to pull and push
-- 
-Mention needing corpora
+
+  
+Check that these are correct packages, check corpora
 
 ## Requirements:
 
 ### Python Packages:
 
-- discord
-- deep_translator  
-- requests
+- [discord](https://pypi.org/project/discord.py/)  
+- [deep_translator](https://pypi.org/project/deep-translator/)  
+- [requests](https://pypi.org/project/requests/)  
 - wikipedia
 - sqlite3
 - tabulate
