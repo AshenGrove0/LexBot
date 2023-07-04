@@ -15,8 +15,6 @@ def get_definition(word):
     base_url = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
     api_key = "?key=" + DICT_API_KEY
 
-    print(api_key)
-
     full_api_url = base_url + word + api_key
 
     try:
@@ -37,8 +35,6 @@ def get_synonyms(word):
     base_url = "https://dictionaryapi.com/api/v3/references/thesaurus/json/"
     api_key = "?key=" + THES_API_KEY
 
-    print(api_key)
-
     full_api_url = base_url + word + api_key
 
     try:
@@ -49,11 +45,11 @@ def get_synonyms(word):
         synonyms_string = ""
         for synonym in synonyms:
             synonyms_string += synonym
-            synonyms_string += ","
-        synonyms.strip("")
+            synonyms_string += ", "
         # Remove text modifiers from raw sentence string
-        print(synonyms)
-        return synonyms
+        synonyms_string = synonyms_string[:-2]
+        synonyms_string += "."
+        return synonyms_string
     except Exception as e:
         print(e)
         return -1
