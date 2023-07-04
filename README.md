@@ -1,3 +1,4 @@
 # Lexbot
-> A Discord bot for all your word-based needs
+Lexbot is a discord bot with a variety of functions for analysing words and passages of text.
+
 Mention needing corpora
