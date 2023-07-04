@@ -3,10 +3,6 @@
 ## Overview
 Lexbot is a discord bot with a variety of functions for analysing words and passages of text.
 
-### Files
-
-
-Mention needing corpora
 
 <ALREADY WRITTEN SUMMARY>
   
