@@ -14,57 +14,62 @@ def get_definition(word):
     """Accesses the Marriam webster API to get the definition of a word"""
     base_url = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
     api_key = "?key=" + DICT_API_KEY
-	
+
     print(api_key)
-    
+
     full_api_url = base_url + word + api_key
 
     try:
         response = requests.get(full_api_url)
         data = json.loads(response.content.decode('utf-8'))[0]
         print(data)
-        #Digs through the JSON response to find relevant info
+        # Digs through the JSON response to find relevant info
         definition = data['shortdef'][0]
-        #Removes text modifiers from raw sentence string
+        # Removes text modifiers from raw sentence string
         return definition
     except Exception as e:
         print(e)
         return -1
 
+
 def get_synonyms(word):
     """Accesses the Marriam webster API to get the synonyms of a word"""
     base_url = "https://dictionaryapi.com/api/v3/references/thesaurus/json/"
     api_key = "?key=" + THES_API_KEY
-	
+
     print(api_key)
-    
+
     full_api_url = base_url + word + api_key
 
     try:
         response = requests.get(full_api_url)
         data = json.loads(response.content.decode('utf-8'))[0]
-        #Dig through the JSON response to find relevant info
-        synonyms = data["meta"]["syns"][0] 
+        # Dig through the JSON response to find relevant info
+        synonyms = data["meta"]["syns"][0]
         synonyms_string = ""
         for synonym in synonyms:
             synonyms_string += synonym
             synonyms_string += ","
         synonyms.strip("")
-        #Remove text modifiers from raw sentence string
+        # Remove text modifiers from raw sentence string
         print(synonyms)
         return synonyms
     except Exception as e:
         print(e)
         return -1
 
+
 def get_info(wikipedia_arg):
     """Uses the wikipedia module to return a summary of the topic"""
-    wikipedia_summary = wikipedia.summary(wikipedia_arg, sentences=5, auto_suggest=True, redirect=True)
+    wikipedia_summary = wikipedia.summary(
+        wikipedia_arg, sentences=5, auto_suggest=True, redirect=True)
     return wikipedia_summary
+
 
 def get_pos_word(pos_acronym):
     """Gets the Part of Speech of a word"""
     return POS_DICTIONARY[pos_acronym]
+
 
 LANGUAGE_CODES = {
     "afar": "aa",
