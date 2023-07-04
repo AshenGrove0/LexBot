@@ -6,5 +6,6 @@
 
 ## Features:
 
-- y
+- Start by copying from help command but remeber to pull and push
+- 
 Mention needing corpora
