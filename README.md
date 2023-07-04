@@ -1,5 +1,10 @@
 # Lexbot
 
-> A Discord bot for all your word-based needs
+<ALREADY WRITTEN SUMMARY>
+  
+#### Video Demo:  <URL HERE>
 
+## Features:
+
+- y
 Mention needing corpora
