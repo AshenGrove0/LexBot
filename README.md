@@ -10,10 +10,15 @@ Mention needing corpora
 
 ## Features:
 
-- Start by copying from help command but remeber to pull and push
-
-  
-Check that these are correct packages, check corpora
+### Commands:
+- `/history <amount>`: Provides a list of the previous commands
+- `/define <word>`: Defines a word using the Merriam-Webster Dictionary API
+- `/synonym <word>`: Finds synoynms for a word using the Merriam-Webster Dictionary API
+- `/info <topic>`: Provides information on a topic from wikipedia
+- `/translate <passage> <target_language>`: Translates a passage into another language
+- `/classify <word> <context_sentence>`: Finds the Part of Speech (type) of a word using the Natural Language Toolkit (NTLK)
+- /`stem <word>`: Finds the stem of a word
+- `/analyze <sentence>`: Provides a sentiment analysis on a passage of text
 
 ## Requirements:
 
@@ -23,8 +28,8 @@ Check that these are correct packages, check corpora
 - [deep_translator](https://pypi.org/project/deep-translator/)  
 - [requests](https://pypi.org/project/requests/)  
 - [wikipedia](https://pypi.org/project/wikipedia/)
-- tabulate
-- nltk
+- [tabulate](https://pypi.org/project/tabulate/)
+- [nltk](https://pypi.org/project/nltk/)
 
 ### NTLK Corpora:
 

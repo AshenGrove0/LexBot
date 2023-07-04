@@ -56,7 +56,7 @@ async def help(interaction: discord.Interaction):
     /define <word>: Defines a word
     /synonym <word>: Finds synoynms for a word
     /info <topic>: Gives information on a topic from wikipedia
-    /translate <passage> <target_language>
+    /translate <passage> <target_language>: Translates a passage into another language
         /classify <word> <context_sentence>: Finds the Part of Speech (type) of a word
     /stem <word>: Finds the stem of a word
     /analyze <sentence>: Provides a sentiment analysis on a passage of text```""", 
