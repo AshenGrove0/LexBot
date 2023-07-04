@@ -25,4 +25,4 @@ Check that these are correct packages, check corpora
 
 ### NTLK Corpora:
 
-- stopwords
+- [stopwords](/stopwords.md)
