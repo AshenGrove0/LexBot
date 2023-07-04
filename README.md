@@ -1,8 +1,12 @@
 # Lexbot
+
+## Overview
 Lexbot is a discord bot with a variety of functions for analysing words and passages of text.
 
+### Files
+
+
 Mention needing corpora
-=======
 
 <ALREADY WRITTEN SUMMARY>
   
@@ -33,4 +37,10 @@ Mention needing corpora
 
 ### NTLK Corpora:
 
-- [stopwords](/stopwords.md)
+- [stopwords](https://www.nltk.org/data.html)
+
+### API Keys/Tokens:
+
+- Merriam-Webster Dictionary
+- Merriam-Webster Thesaurus
+- Discord Bot Token
