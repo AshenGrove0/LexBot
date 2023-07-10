@@ -6,7 +6,7 @@ Lexbot is a discord bot with a variety of functions for analysing words and pass
 
 <ALREADY WRITTEN SUMMARY>
   
-#### Video Demo:  <URL HERE>
+#### Video Demo: https://youtu.be/kU1z_ugIexw
 
 ## Features:
 
